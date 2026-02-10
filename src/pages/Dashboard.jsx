@@ -1,5 +1,7 @@
 import { useGetBooksQuery } from '../features/books/booksApi'
 import BookCard from '../components/BookCard'
+import AddBookForm from '../components/AddBookForm'
+
 
 function Dashboard() {
   const { data: books, isLoading, error } = useGetBooksQuery()
@@ -15,6 +17,9 @@ function Dashboard() {
   return (
     <div>
         <h2>All Books</h2>
+
+        <AddBookForm />
+
 
         {books.length === 0 ? (
             <p>No books available</p>
