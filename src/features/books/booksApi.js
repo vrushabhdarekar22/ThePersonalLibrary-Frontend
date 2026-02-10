@@ -12,7 +12,21 @@ export const booksApi = createApi({
         genre ? `/books?genre=${genre}` : '/books',
       providesTags: ['Books'],
     }),
+
+    addBook: builder.mutation({
+    query: (newBook) => ({
+        url: '/books',
+        method: 'POST',
+        body: newBook,
+    }),
+    invalidatesTags: ['Books'],
+    }),
+
   }),
 })
 
-export const { useGetBooksQuery } = booksApi
+
+export const {
+  useGetBooksQuery,
+  useAddBookMutation,
+} = booksApi
