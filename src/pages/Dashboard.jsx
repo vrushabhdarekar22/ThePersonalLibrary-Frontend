@@ -1,4 +1,5 @@
 import { useGetBooksQuery } from '../features/books/booksApi'
+import BookCard from '../components/BookCard'
 
 function Dashboard() {
   const { data: books, isLoading, error } = useGetBooksQuery()
@@ -13,20 +14,19 @@ function Dashboard() {
 
   return (
     <div>
-      <h2>All Books</h2>
+        <h2>All Books</h2>
 
-      {books?.length === 0 ? (
-        <p>No books available</p>
-      ) : (
-        <ul>
-          {books.map((book) => (
-            <li key={book.id}>
-              <strong>{book.title}</strong> — {book.author}
-            </li>
-          ))}
-        </ul>
-      )}
+        {books.length === 0 ? (
+            <p>No books available</p>
+        ) : (
+            <div style={{ display: 'grid', gap: '16px' }}>
+            {books.map((book) => (
+                <BookCard key={book.id} book={book} />
+            ))}
+            </div>
+        )}
     </div>
+
   )
 }
 
