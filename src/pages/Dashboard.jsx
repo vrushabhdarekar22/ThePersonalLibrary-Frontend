@@ -2,36 +2,33 @@ import { useGetBooksQuery } from '../features/books/booksApi'
 import BookCard from '../components/BookCard'
 import AddBookForm from '../components/AddBookForm'
 
-
 function Dashboard() {
-  const { data: books, isLoading, error } = useGetBooksQuery()
+  const { data: books = [], isLoading, error } = useGetBooksQuery()
 
   if (isLoading) {
-    return <p>Loading books...</p>
+    return <p className="text-center mt-8">Loading books...</p>
   }
 
   if (error) {
-    return <p>Something went wrong while fetching books</p>
+    return <p className="text-center text-red-500">Failed to load books</p>
   }
 
   return (
     <div>
-        <h2>All Books</h2>
+      <AddBookForm />
 
-        <AddBookForm />
-
-
-        {books.length === 0 ? (
-            <p>No books available</p>
-        ) : (
-            <div style={{ display: 'grid', gap: '16px' }}>
-            {books.map((book) => (
-                <BookCard key={book.id} book={book} />
-            ))}
-            </div>
-        )}
+      {books.length === 0 ? (
+        <p className="text-center text-gray-500 mt-8">
+          No books available
+        </p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {books.map((book) => (
+            <BookCard key={book.id} book={book} />
+          ))}
+        </div>
+      )}
     </div>
-
   )
 }
 
