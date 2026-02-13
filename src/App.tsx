@@ -1,9 +1,10 @@
 import { useSelector } from 'react-redux'
+import type { RootState } from './app/store'
 import Dashboard from './pages/Dashboard'
 
 function App() {
   const favoriteCount = useSelector(
-    (state) => state.favorites.favoriteIds.length
+    (state: RootState) => state.favorites.favoriteIds.length
   )
 
   return (
