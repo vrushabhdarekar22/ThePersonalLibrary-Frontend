@@ -4,26 +4,28 @@ import {
 } from '../features/books/booksApi'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { toggleFavorite } from '../features/favourites/favoritesSlice'
-// import {toggleFavorite} from '../features/favourites/favoritesSlice'
+import type { RootState, AppDispatch } from '../app/store'
+import { toggleFavorite } from '../features/favorites/favoritesSlice'
+import type { Book } from '../types/book'
 
+interface BookCardProps {
+  book: Book
+}
 
-function BookCard({ book }) {
+function BookCard({ book }: BookCardProps) {
   const [deleteBook] = useDeleteBookMutation()
   const [updateRating] = useUpdateRatingMutation()
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
   const favoriteIds = useSelector(
-    (state) => state.favorites.favoriteIds
+    (state: RootState) => state.favorites.favoriteIds
   )
 
   const isFavorite = favoriteIds.includes(book.id)
 
-
   return (
     <div className="bg-white rounded-lg border p-4 shadow-sm">
-      {/* <h3 className="text-lg font-semibold">{book.title}</h3> */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">{book.title}</h3>
 

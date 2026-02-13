@@ -1,12 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+interface FavoritesState {
+  favoriteIds: number[]
+}
+
+const initialState: FavoritesState = {
+  favoriteIds: [],
+}
 
 const favoritesSlice = createSlice({
   name: 'favorites',
-  initialState: {
-    favoriteIds: [],
-  },
+  initialState,
   reducers: {
-    toggleFavorite: (state, action) => {
+    toggleFavorite: (state, action: PayloadAction<number>) => {
       const bookId = action.payload
 
       if (state.favoriteIds.includes(bookId)) {
