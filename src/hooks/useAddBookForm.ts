@@ -24,7 +24,8 @@ export const useAddBookForm = (
       author,
       genre,
       rating,
-    } as Partial<Book>)
+    }).unwrap()
+
 
     setTitle('')
     setAuthor('')

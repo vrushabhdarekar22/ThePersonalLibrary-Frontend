@@ -17,19 +17,24 @@ export const booksApi = createApi({
 
     getBooks: builder.query<
       PaginatedBooks,
-      { genre: string; page: number; limit: number }
+      { genre: string; search: string; page: number; limit: number }
     >({
-      query: ({ genre, page, limit }) => {
+      query: ({ genre, search, page, limit }) => {
         const params = new URLSearchParams()
 
         if (genre) params.append('genre', genre)
+        if (search) params.append('search', search)
+
         params.append('page', String(page))
         params.append('limit', String(limit))
 
         return `/books?${params.toString()}`
       },
-      providesTags: ['Books'],
+
+      providesTags: ['Books'], 
     }),
+
+
 
 
     // ADD Book

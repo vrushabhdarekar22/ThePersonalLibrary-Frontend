@@ -7,22 +7,31 @@ import { useBooks } from '../hooks/useBooks'
 
 function Dashboard() {
   const [genre, setGenre] = useState<string>('')
+  const [search, setSearch] = useState<string>('')
 
   const [page, setPage] = useState<number>(1)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   const limit = 6
 
+  // Reset page when genre or search changes
   useEffect(() => {
     setPage(1)
-  }, [genre])
+  }, [genre, search])
 
   const {
     books,
     totalPages,
     isLoading,
     error,
-  } = useBooks(genre, page, limit)
+  } = useBooks(genre, search, page, limit)
+
+  
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages)
+    }
+  }, [totalPages, page])
 
   if (isLoading) {
     return <p className="text-center mt-8">Loading books...</p>
@@ -39,7 +48,6 @@ function Dashboard() {
   return (
     <div>
 
-     
       <button
         onClick={() => setIsModalOpen(true)}
         className="bg-green-600 text-white px-4 py-2 rounded mb-6 hover:bg-green-700"
@@ -47,7 +55,16 @@ function Dashboard() {
         + Add Book
       </button>
 
-      
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by title or author..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
       <div className="mb-6 flex items-center gap-4">
         <label className="font-medium">
           Filter by Genre:
@@ -68,10 +85,9 @@ function Dashboard() {
         </select>
       </div>
 
-      
       {books.length === 0 ? (
         <p className="text-center text-gray-500 mt-8">
-          No books available
+          No books found
         </p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,7 +97,6 @@ function Dashboard() {
         </div>
       )}
 
-      
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
@@ -106,16 +121,17 @@ function Dashboard() {
         </div>
       )}
 
-      
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       >
         <AddBookForm
-          onSuccess={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            setIsModalOpen(false)
+            setPage(1)
+          }}
         />
       </Modal>
-
 
     </div>
   )
