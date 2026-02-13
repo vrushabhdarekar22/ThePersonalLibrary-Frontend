@@ -1,34 +1,18 @@
-import { useState } from 'react'
-import { useAddBookMutation } from '../features/books/booksApi'
-import type { Book } from '../types/book'
+import { useAddBookForm } from '../hooks/useAddBookForm'
 
 function AddBookForm() {
-  const [title, setTitle] = useState<string>('')
-  const [author, setAuthor] = useState<string>('')
-  const [genre, setGenre] = useState<string>('')
-  const [rating, setRating] = useState<number>(1)
-
-  const [addBook, { isLoading }] = useAddBookMutation()
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault()
-
-    if (!title || !author) return
-
-    await addBook({
-      title,
-      author,
-      genre,
-      rating,
-    } as Partial<Book>)
-
-    setTitle('')
-    setAuthor('')
-    setGenre('')
-    setRating(1)
-  }
+  const {
+    title,
+    author,
+    genre,
+    rating,
+    isLoading,
+    setTitle,
+    setAuthor,
+    setGenre,
+    setRating,
+    handleSubmit,
+  } = useAddBookForm()
 
   return (
     <form
@@ -43,27 +27,21 @@ function AddBookForm() {
         className="w-full border p-2 rounded mb-2"
         placeholder="Title"
         value={title}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setTitle(e.target.value)
-        }
+        onChange={(e) => setTitle(e.target.value)}
       />
 
       <input
         className="w-full border p-2 rounded mb-2"
         placeholder="Author"
         value={author}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setAuthor(e.target.value)
-        }
+        onChange={(e) => setAuthor(e.target.value)}
       />
 
       <input
         className="w-full border p-2 rounded mb-2"
         placeholder="Genre"
         value={genre}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setGenre(e.target.value)
-        }
+        onChange={(e) => setGenre(e.target.value)}
       />
 
       <input
@@ -72,7 +50,7 @@ function AddBookForm() {
         max="5"
         className="w-full border p-2 rounded mb-4"
         value={rating}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange={(e) =>
           setRating(Number(e.target.value))
         }
       />
