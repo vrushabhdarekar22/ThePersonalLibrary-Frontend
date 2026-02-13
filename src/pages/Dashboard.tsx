@@ -1,17 +1,13 @@
-import { useGetBooksQuery } from '../features/books/booksApi'
 import BookCard from '../components/BookCard'
 import AddBookForm from '../components/AddBookForm'
 import { useState } from 'react'
 import type { Book } from '../types/book'
+import { useBooks } from '../hooks/useBooks'
 
 function Dashboard() {
   const [genre, setGenre] = useState<string>('')
 
-  const {
-    data: books = [],
-    isLoading,
-    error,
-  } = useGetBooksQuery(genre)
+  const { books, isLoading, error } = useBooks(genre)
 
   if (isLoading) {
     return <p className="text-center mt-8">Loading books...</p>

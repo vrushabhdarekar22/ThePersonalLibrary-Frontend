@@ -2,7 +2,7 @@ import {
   useDeleteBookMutation,
   useUpdateRatingMutation,
 } from '../features/books/booksApi'
-
+import { useDeleteBook ,useUpdateRating} from '../hooks/useBooks'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState, AppDispatch } from '../app/store'
 import { toggleFavorite } from '../features/favorites/favoritesSlice'
@@ -13,8 +13,8 @@ interface BookCardProps {
 }
 
 function BookCard({ book }: BookCardProps) {
-  const [deleteBook] = useDeleteBookMutation()
-  const [updateRating] = useUpdateRatingMutation()
+  const [deleteBook] = useDeleteBook()
+  const [updateRating] = useUpdateRating()
 
   const dispatch = useDispatch<AppDispatch>()
 
