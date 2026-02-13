@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { useAddBook } from './useBooks'
 import type { Book } from '../types/book'
 
-export const useAddBookForm = () => {
+export const useAddBookForm = (
+  onSuccess?: () => void
+) => {
   const [title, setTitle] = useState<string>('')
   const [author, setAuthor] = useState<string>('')
   const [genre, setGenre] = useState<string>('')
@@ -28,6 +30,11 @@ export const useAddBookForm = () => {
     setAuthor('')
     setGenre('')
     setRating(1)
+
+   
+    if (onSuccess) {
+      onSuccess()
+    }
   }
 
   return {

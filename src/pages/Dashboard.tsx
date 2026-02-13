@@ -1,23 +1,28 @@
 import BookCard from '../components/BookCard'
 import AddBookForm from '../components/AddBookForm'
-import { useState } from 'react'
+import Modal from '../components/Modal'
+import { useState, useEffect } from 'react'
 import type { Book } from '../types/book'
 import { useBooks } from '../hooks/useBooks'
-import { useEffect } from 'react'
 
 function Dashboard() {
   const [genre, setGenre] = useState<string>('')
 
   const [page, setPage] = useState<number>(1)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
   const limit = 6
 
-  
+  useEffect(() => {
+    setPage(1)
+  }, [genre])
 
-  useEffect(() => { setPage(1) }, [genre])
-
-
-  const {books,totalPages,isLoading,error} = useBooks(genre, page, limit)
-
+  const {
+    books,
+    totalPages,
+    isLoading,
+    error,
+  } = useBooks(genre, page, limit)
 
   if (isLoading) {
     return <p className="text-center mt-8">Loading books...</p>
@@ -33,8 +38,16 @@ function Dashboard() {
 
   return (
     <div>
-      <AddBookForm />
 
+     
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="bg-green-600 text-white px-4 py-2 rounded mb-6 hover:bg-green-700"
+      >
+        + Add Book
+      </button>
+
+      
       <div className="mb-6 flex items-center gap-4">
         <label className="font-medium">
           Filter by Genre:
@@ -55,6 +68,7 @@ function Dashboard() {
         </select>
       </div>
 
+      
       {books.length === 0 ? (
         <p className="text-center text-gray-500 mt-8">
           No books available
@@ -67,7 +81,7 @@ function Dashboard() {
         </div>
       )}
 
-
+      
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
@@ -91,6 +105,17 @@ function Dashboard() {
           </button>
         </div>
       )}
+
+      
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
+        <AddBookForm
+          onSuccess={() => setIsModalOpen(false)}
+        />
+      </Modal>
+
 
     </div>
   )

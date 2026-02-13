@@ -1,6 +1,10 @@
 import { useAddBookForm } from '../hooks/useAddBookForm'
 
-function AddBookForm() {
+interface AddBookFormProps {
+  onSuccess?: () => void
+}
+
+function AddBookForm({ onSuccess }: AddBookFormProps) {
   const {
     title,
     author,
@@ -12,12 +16,12 @@ function AddBookForm() {
     setGenre,
     setRating,
     handleSubmit,
-  } = useAddBookForm()
+  } = useAddBookForm(onSuccess)
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-4 rounded-lg shadow-sm mb-6"
+      className="bg-white p-4 rounded-lg shadow-sm"
     >
       <h3 className="text-lg font-semibold mb-4">
         Add New Book
