@@ -3,11 +3,21 @@ import AddBookForm from '../components/AddBookForm'
 import { useState } from 'react'
 import type { Book } from '../types/book'
 import { useBooks } from '../hooks/useBooks'
+import { useEffect } from 'react'
 
 function Dashboard() {
   const [genre, setGenre] = useState<string>('')
 
-  const { books, isLoading, error } = useBooks(genre)
+  const [page, setPage] = useState<number>(1)
+  const limit = 6
+
+  
+
+  useEffect(() => { setPage(1) }, [genre])
+
+
+  const {books,totalPages,isLoading,error} = useBooks(genre, page, limit)
+
 
   if (isLoading) {
     return <p className="text-center mt-8">Loading books...</p>
@@ -56,6 +66,32 @@ function Dashboard() {
           ))}
         </div>
       )}
+
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <span>
+            Page {page} of {totalPages}
+          </span>
+
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
     </div>
   )
 }
