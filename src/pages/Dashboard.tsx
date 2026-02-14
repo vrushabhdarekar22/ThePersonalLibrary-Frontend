@@ -18,12 +18,7 @@ function Dashboard() {
     setPage(1)
   }, [genre, search])
 
-  const {
-    books,
-    totalPages,
-    isLoading,
-    error,
-  } = useBooks(genre, search, page, limit)
+  const {books,totalPages,isLoading,error,} = useBooks(genre, search, page, limit)
 
   useEffect(() => {
     if (page > totalPages && totalPages > 0) {
@@ -50,10 +45,8 @@ function Dashboard() {
   return (
   <div className="flex flex-col min-h-[80vh]">
 
-    {/* Toolbar */}
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
       
-      {/* Search */}
       <input
         type="text"
         placeholder="Search by title or author..."
@@ -62,7 +55,6 @@ function Dashboard() {
         className="w-full md:w-1/3 border border-indigo-200 bg-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
       />
 
-      {/* Filter + Add */}
       <div className="flex items-center gap-4">
         <select
           value={genre}
@@ -87,18 +79,13 @@ function Dashboard() {
       </div>
     </div>
 
-    {/* Content Area */}
     <div className="flex-grow flex flex-col">
 
-      {/* Book Grid */}
       <div className="flex-grow">
         {books.length === 0 ? (
           <div className="text-center mt-16 text-gray-500">
             <p className="text-lg font-medium">
               No books found
-            </p>
-            <p className="text-sm mt-2">
-              Try adjusting your search or filter.
             </p>
           </div>
         ) : (
@@ -110,7 +97,6 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Pagination (Now Stays at Bottom of Section) */}
       {totalPages > 1 && (
         <div className="mt-10 pt-6 border-t border-gray-200 flex justify-center items-center gap-6">
           <button
@@ -136,7 +122,6 @@ function Dashboard() {
       )}
     </div>
 
-    {/* Modal */}
     <Modal
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}

@@ -39,7 +39,6 @@ function BookCard({ book }: BookCardProps) {
   return (
     <div className="bg-white/80 backdrop-blur-md rounded-xl p-5 shadow-md hover:shadow-xl transition-all duration-300 border border-indigo-100 hover:-translate-y-1">
 
-      {/* Header */}
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="text-lg font-semibold text-gray-800">
@@ -64,19 +63,16 @@ function BookCard({ book }: BookCardProps) {
         </button>
       </div>
 
-      {/* Genre Badge */}
       <div className="mb-3">
         <span className="text-xs bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full font-medium">
           {book.genre}
         </span>
       </div>
 
-      {/* Rating */}
       <div className="flex items-center gap-1 mb-4">
         {renderStars(book.rating)}
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-2">
 
         <button
