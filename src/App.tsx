@@ -1,25 +1,15 @@
-import { useSelector } from 'react-redux'
-import type { RootState } from './app/store'
+import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
+import { Toaster } from 'react-hot-toast'
+
 
 function App() {
-  const favoriteCount = useSelector(
-    (state: RootState) => state.favorites.favoriteIds.length
-  )
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-sm flex justify-between items-center px-6 py-4">
-        <h1 className="text-2xl font-semibold">
-          📚 Personal Library
-        </h1>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
 
-        <div className="text-lg">
-          ⭐ Favorites: {favoriteCount}
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto p-4">
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        <Toaster position="top-center" />
         <Dashboard />
       </main>
     </div>

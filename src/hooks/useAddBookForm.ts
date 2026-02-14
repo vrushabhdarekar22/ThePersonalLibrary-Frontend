@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useAddBook } from './useBooks'
 import type { Book } from '../types/book'
+import toast from 'react-hot-toast'
+
 
 export const useAddBookForm = (
   onSuccess?: () => void
@@ -19,12 +21,17 @@ export const useAddBookForm = (
 
     if (!title || !author) return
 
-    await addBook({
-      title,
-      author,
-      genre,
-      rating,
-    }).unwrap()
+     try {
+      await addBook({ title, author, genre, rating }).unwrap()
+
+      toast.success('Book added successfully')
+
+      onSuccess?.()
+
+    } catch (error) {
+      toast.error('Failed to add book')
+    }
+
 
 
     setTitle('')
