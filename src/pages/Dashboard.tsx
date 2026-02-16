@@ -2,7 +2,7 @@ import BookCard from '../components/BookCard'
 import AddBookForm from '../components/AddBookForm'
 import Modal from '../components/Modal'
 import { useState, useEffect } from 'react'
-import type { Book } from '../types/book'
+import type { Book } from '../types/book' // we including this with (import type) bcoz this will remove completely after compilation
 import { useBooks } from '../hooks/useBooks'
 
 function Dashboard() {
@@ -12,11 +12,9 @@ function Dashboard() {
   const [page, setPage] = useState<number>(1)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
-  const limit = 6
+  const limit = 6 // we have set 6 books per page
 
-  useEffect(() => {
-    setPage(1)
-  }, [genre, search])
+  useEffect(() => {setPage(1)}, [genre, search]) // when genre or search changes page will reset to 1
 
   const {books,totalPages,isLoading,error,} = useBooks(genre, search, page, limit)
 
@@ -58,8 +56,7 @@ function Dashboard() {
       <div className="flex items-center gap-4">
         <select
           value={genre}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setGenre(e.target.value)
+          onChange={(e) =>setGenre(e.target.value)
           }
           className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-indigo-500"
         >
@@ -101,7 +98,7 @@ function Dashboard() {
         <div className="mt-10 pt-6 border-t border-gray-200 flex justify-center items-center gap-6">
           <button
             onClick={() => setPage(page - 1)}
-            disabled={page === 1}
+            disabled={page === 1} // we cna`t access button
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-indigo-50 transition"
           >
             Prev
