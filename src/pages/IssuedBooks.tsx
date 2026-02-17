@@ -36,20 +36,22 @@ const IssuedBooks = () => {
         <div className="space-y-3">
           {data.map((borrow) => (
             <div
-              key={borrow.id}
+              key={borrow._id}
               className="bg-white px-5 py-4 rounded-xl shadow-sm border border-slate-200"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-sm font-semibold text-slate-800">
-                    {borrow.book.title}
+                    {borrow.book?.title}
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Borrowed by: {borrow.user.email}
+                    Borrowed by: {borrow.user?.email}
                   </p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Issued On: {new Date(borrow.issueDate).toLocaleDateString()}
-                  </p>
+                  {borrow.issueDate && (
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Issued On: {new Date(borrow.issueDate).toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
 
                 <span className="text-xs font-medium px-2.5 py-1 rounded-full capitalize shrink-0 bg-indigo-50 text-indigo-600 border border-indigo-100">
@@ -60,18 +62,19 @@ const IssuedBooks = () => {
               <button
                 onClick={async () => {
                   try {
-                    await returnBook(borrow.id).unwrap()
+                    await returnBook(borrow._id).unwrap()
                     toast.success('Book returned successfully')
                   } catch {
                     toast.error('Return failed')
                   }
                 }}
-                className="mt-4 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-lg transition-colors duration-150"
+                className="mt-4 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg"
               >
                 Return Book
               </button>
             </div>
           ))}
+
         </div>
 
       </div>

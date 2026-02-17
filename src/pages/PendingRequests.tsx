@@ -38,16 +38,16 @@ const PendingRequests = () => {
         <div className="space-y-3">
           {data.map((borrow) => (
             <div
-              key={borrow.id}
+              key={borrow._id}
               className="bg-white px-5 py-4 rounded-xl shadow-sm border border-slate-200"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-sm font-semibold text-slate-800">
-                    {borrow.book.title}
+                    {borrow.book?.title}
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Requested by: {borrow.user.email}
+                    Requested by: {borrow.user?.email}
                   </p>
                 </div>
 
@@ -60,13 +60,13 @@ const PendingRequests = () => {
                 <button
                   onClick={async () => {
                     try {
-                      await approveRequest(borrow.id).unwrap()
+                      await approveRequest(borrow._id).unwrap()
                       toast.success('Request approved')
-                    } catch (err: any) {
+                    } catch {
                       toast.error('Approval failed')
                     }
                   }}
-                  className="px-4 py-1.5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-medium rounded-lg transition-colors duration-150"
+                  className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg"
                 >
                   Approve
                 </button>
@@ -74,19 +74,20 @@ const PendingRequests = () => {
                 <button
                   onClick={async () => {
                     try {
-                      await declineRequest(borrow.id).unwrap()
+                      await declineRequest(borrow._id).unwrap()
                       toast.success('Request declined')
-                    } catch (err: any) {
+                    } catch {
                       toast.error('Decline failed')
                     }
                   }}
-                  className="px-4 py-1.5 bg-rose-500 hover:bg-rose-600 active:bg-rose-700 text-white text-sm font-medium rounded-lg transition-colors duration-150"
+                  className="px-4 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium rounded-lg"
                 >
                   Decline
                 </button>
               </div>
             </div>
           ))}
+
         </div>
 
       </div>
