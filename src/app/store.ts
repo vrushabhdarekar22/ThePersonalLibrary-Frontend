@@ -2,6 +2,8 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { booksApi } from '../features/books/booksApi'
 import favoritesReducer from '../features/favorites/favoritesSlice'
 import paginationReducer from '../features/pagination/paginationSlice'
+import authReducer from '../features/auth/authSlice'
+import { borrowApi } from '../features/borrow/borrowApi'
 
 // RTK Query => Redux toolkit`s built-in data fetching sol
 
@@ -13,8 +15,10 @@ import { persistReducer, persistStore } from 'redux-persist'
 // this is basically central place to store data. Instead of passing props from parent to child we can store here
 const rootReducer = combineReducers({
   [booksApi.reducerPath]: booksApi.reducer, // API cache stored here
+  [borrowApi.reducerPath]: borrowApi.reducer,
   favorites: favoritesReducer,
   pagination: paginationReducer,
+  auth: authReducer, // added auth reducer
 })
 
 
@@ -22,7 +26,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root', // key name in localStorage
   storage,
-  whitelist: ['favorites', 'pagination'], // only these slices will persist after refresh
+  whitelist: ['favorites', 'pagination', 'auth'], // only these slices will persist after refresh
 }
 
 
@@ -36,10 +40,10 @@ export const store = configureStore({
 
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, 
+      serializableCheck: false,
       // disabling serializable check because redux-persist stores non-serializable values internally
-    }).concat(booksApi.middleware), 
-    // RTK Query middleware for caching, auto-refetching etc.
+    }).concat(booksApi.middleware, borrowApi.middleware),
+  // RTK Query middleware for caching, auto-refetching etc.
 })
 
 

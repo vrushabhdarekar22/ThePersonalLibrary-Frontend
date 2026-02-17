@@ -13,18 +13,17 @@ function Dashboard() {
   const [genre, setGenre] = useState<string>('')
   const [search, setSearch] = useState<string>('')
 
- 
-  // const [page, setPage] = useState<number>(1)
-
   const dispatch = useDispatch()
 
   const { page, limit } = useSelector(
     (state: RootState) => state.pagination
   )
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const { role } = useSelector(
+    (state: RootState) => state.auth
+  )
 
-  // const limit = 6 // 
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   const { books, totalPages, isLoading, error } =
     useBooks(genre, search, page, limit)
@@ -77,12 +76,15 @@ function Dashboard() {
             <option value="Biography">Biography</option>
           </select>
 
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
-          >
-            + Add Book
-          </button>
+          {/* Only ADMIN can add books */}
+          {role === 'admin' && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+            >
+              + Add Book
+            </button>
+          )}
         </div>
       </div>
 
@@ -129,17 +131,20 @@ function Dashboard() {
         )}
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      >
-        <AddBookForm
-          onSuccess={() => {
-            setIsModalOpen(false)
-            dispatch(resetPage())
-          }}
-        />
-      </Modal>
+      {/* Only ADMIN sees modal */}
+      {role === 'admin' && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <AddBookForm
+            onSuccess={() => {
+              setIsModalOpen(false)
+              dispatch(resetPage())
+            }}
+          />
+        </Modal>
+      )}
 
     </div>
   )

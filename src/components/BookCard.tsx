@@ -3,20 +3,30 @@ import { useDispatch, useSelector } from 'react-redux'
 import type { RootState, AppDispatch } from '../app/store'
 import type { Book } from '../types/book'
 import { toggleFavorite, removeFavorite } from '../features/favorites/favoritesSlice'
-
+import { useRequestBookMutation } from '../features/borrow/borrowApi'
+import toast from 'react-hot-toast'
 
 interface BookCardProps {
   book: Book
 }
 
+
+
+
 function BookCard({ book }: BookCardProps) {
   const [deleteBook] = useDeleteBook()
   const [updateRating] = useUpdateRating()
+  const [requestBook] = useRequestBookMutation()
+
 
   const dispatch = useDispatch<AppDispatch>()
 
   const favoriteIds = useSelector(
     (state: RootState) => state.favorites.favoriteIds
+  )
+
+  const { role } = useSelector(
+    (state: RootState) => state.auth
   )
 
   const isFavorite = favoriteIds.includes(book.id)
@@ -49,18 +59,18 @@ function BookCard({ book }: BookCardProps) {
           </p>
         </div>
 
-        <button
-          onClick={() =>
-            dispatch(toggleFavorite(book.id))
-          }
-          className={`text-xl transition ${
-            isFavorite
-              ? 'text-amber-400 scale-110'
-              : 'text-gray-300 hover:text-amber-400'
-          }`}
-        >
-          ★
-        </button>
+        {role === 'user' && (
+          <button
+            onClick={() => dispatch(toggleFavorite(book.id))}
+            className={`text-xl transition ${isFavorite
+                ? 'text-amber-400 scale-110'
+                : 'text-gray-300 hover:text-amber-400'
+              }`}
+          >
+            ★
+          </button>
+        )}
+
       </div>
 
       <div className="mb-3">
@@ -73,42 +83,74 @@ function BookCard({ book }: BookCardProps) {
         {renderStars(book.rating)}
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Only ADMIN & MANAGER can update rating */}
+      {(role === 'admin' || role === 'manager') && (
+        <div className="flex items-center gap-2">
 
-        <button
-          onClick={() =>
-            updateRating({
-              id: book.id,
-              rating: Math.max(1, book.rating - 1),
-            })
-          }
-          className="px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200 transition"
-        >
-          −
-        </button>
+          <button
+            onClick={() =>
+              updateRating({
+                id: book.id,
+                rating: Math.max(1, book.rating - 1),
+              })
+            }
+            className="px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200 transition"
+          >
+            −
+          </button>
 
-        <button
-          onClick={() =>
-            updateRating({
-              id: book.id,
-              rating: Math.min(5, book.rating + 1),
-            })
-          }
-          className="px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200 transition"
-        >
-          +
-        </button>
+          <button
+            onClick={() =>
+              updateRating({
+                id: book.id,
+                rating: Math.min(5, book.rating + 1),
+              })
+            }
+            className="px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200 transition"
+          >
+            +
+          </button>
 
+          {/* Only ADMIN can delete */}
+          {role === 'admin' && (
+            <button
+              onClick={async () => {
+                await deleteBook(book.id).unwrap()
+                dispatch(removeFavorite(book.id))
+              }}
+              className="ml-auto px-3 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition"
+            >
+              Delete
+            </button>
+          )}
+
+
+
+
+        </div>
+      )}
+
+
+      {/* Only USER can request book */}
+      {role === 'user' && (
         <button
           onClick={async () => {
-            await deleteBook(book.id).unwrap()
-            dispatch(removeFavorite(book.id))
+            try {
+              await requestBook(book.id).unwrap()
+              toast.success('Book request sent')
+            } catch (err: any) {
+              toast.error(err?.data?.message || 'Request failed')
+            }
           }}
-          className="ml-auto px-3 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition"
+          className="mt-3 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
         >
-          Delete
+          Request Book
         </button>
-      </div>
+      )}
+
+
+
+
     </div>
   )
 }

@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux' //it basically for redux connect to react
 import { PersistGate } from 'redux-persist/integration/react'
+import { BrowserRouter } from 'react-router-dom' // 👈 added
 import { store, persistor } from './app/store'
 import App from './App'
 import './index.css'
@@ -17,7 +18,9 @@ ReactDOM.createRoot(rootElement).render(
     {/**Makes store accessible in all components => now we cna use useSelector() and useDispatch()*/}
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <BrowserRouter> {/* 👈 added */}
+          <App />
+        </BrowserRouter>
       </PersistGate>
     </Provider>
 
