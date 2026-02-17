@@ -5,7 +5,7 @@ export const borrowApi = createApi({
   reducerPath: 'borrowApi',
 
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3000',
+    baseUrl: import.meta.env.VITE_API_URL, 
 
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token
@@ -21,12 +21,13 @@ export const borrowApi = createApi({
   tagTypes: ['Borrow'],
 
   endpoints: (builder) => ({
+
     getMyBorrows: builder.query<any[], void>({
       query: () => '/borrow/my',
       providesTags: ['Borrow'],
     }),
 
-    requestBook: builder.mutation<any, number>({
+    requestBook: builder.mutation<any, string>({  
       query: (bookId) => ({
         url: '/borrow/request',
         method: 'POST',
@@ -35,13 +36,12 @@ export const borrowApi = createApi({
       invalidatesTags: ['Borrow'],
     }),
 
-
     getPendingRequests: builder.query<any[], void>({
       query: () => '/borrow/requests',
       providesTags: ['Borrow'],
     }),
 
-    approveRequest: builder.mutation<any, number>({
+    approveRequest: builder.mutation<any, string>({ 
       query: (borrowId) => ({
         url: '/borrow/approve',
         method: 'POST',
@@ -50,7 +50,7 @@ export const borrowApi = createApi({
       invalidatesTags: ['Borrow'],
     }),
 
-    declineRequest: builder.mutation<any, number>({
+    declineRequest: builder.mutation<any, string>({ 
       query: (borrowId) => ({
         url: '/borrow/decline',
         method: 'POST',
@@ -64,7 +64,7 @@ export const borrowApi = createApi({
       providesTags: ['Borrow'],
     }),
 
-    returnBook: builder.mutation<any, number>({
+    returnBook: builder.mutation<any, string>({ 
       query: (borrowId) => ({
         url: '/borrow/return',
         method: 'POST',
@@ -78,16 +78,7 @@ export const borrowApi = createApi({
       providesTags: ['Borrow'],
     }),
 
-
-
-
-
   }),
-
-
-
-
-
 })
 
 export const {
@@ -100,4 +91,3 @@ export const {
   useReturnBookMutation,
   useGetAllBorrowsQuery,
 } = borrowApi
-

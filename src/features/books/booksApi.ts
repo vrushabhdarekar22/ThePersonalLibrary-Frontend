@@ -1,16 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Book } from '../../types/book'
 import { PaginatedBooks } from '../../types/paginatedResponse'
-import type { RootState } from '../../app/store' // 
+import type { RootState } from '../../app/store'
 
-
-export const booksApi = createApi({ // createApp builds entire API system
-  reducerPath: 'booksApi', //API data will be stored here
+export const booksApi = createApi({
+  reducerPath: 'booksApi',
 
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL,
 
-    // 👇 Automatically attach JWT token to every request
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token
 
@@ -22,20 +20,16 @@ export const booksApi = createApi({ // createApp builds entire API system
     },
   }),
 
-  tagTypes: ['Books'],// when we add/delete/update book, Book list will refresh automatically
+  tagTypes: ['Books'],
 
   endpoints: (builder) => ({
 
     // GET Books
-    //builder.query() -> For GET req.
-    //builder.mutation() -> For POST/DELETE/PATCH req.
-
     getBooks: builder.query<
       PaginatedBooks,
       { genre: string; search: string; page: number; limit: number }
     >({
       query: ({ genre, search, page, limit }) => {
-        //here we make URL dynamically
         const params = new URLSearchParams()
 
         if (genre) params.append('genre', genre)
@@ -46,7 +40,6 @@ export const booksApi = createApi({ // createApp builds entire API system
 
         return `/books?${params.toString()}`
       },
-
       providesTags: ['Books'],
     }),
 
@@ -57,11 +50,11 @@ export const booksApi = createApi({ // createApp builds entire API system
         method: 'POST',
         body: newBook,
       }),
-      invalidatesTags: ['Books'], //it refetches books
+      invalidatesTags: ['Books'],
     }),
 
     // DELETE Book
-    deleteBook: builder.mutation<void, number>({
+    deleteBook: builder.mutation<void, string>({   
       query: (id) => ({
         url: `/books/${id}`,
         method: 'DELETE',
@@ -72,7 +65,7 @@ export const booksApi = createApi({ // createApp builds entire API system
     // UPDATE Rating
     updateRating: builder.mutation<
       Book,
-      { id: number; rating: number }
+      { id: string; rating: number }   
     >({
       query: ({ id, rating }) => ({
         url: `/books/${id}`,
@@ -82,13 +75,11 @@ export const booksApi = createApi({ // createApp builds entire API system
       invalidatesTags: ['Books'],
     }),
 
-    
-
   }),
 })
 
 export const {
-  useGetBooksQuery, // it is basically URL
+  useGetBooksQuery,
   useAddBookMutation,
   useDeleteBookMutation,
   useUpdateRatingMutation,
