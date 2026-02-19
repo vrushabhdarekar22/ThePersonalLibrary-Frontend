@@ -20,11 +20,11 @@ export const booksApi = createApi({
     },
   }),
 
-  tagTypes: ['Books'],
+  tagTypes: ['Books', 'Favorites'],
 
   endpoints: (builder) => ({
 
-    // GET Books
+
     getBooks: builder.query<
       PaginatedBooks,
       { genre: string; search: string; page: number; limit: number }
@@ -43,7 +43,7 @@ export const booksApi = createApi({
       providesTags: ['Books'],
     }),
 
-    // ADD Book
+
     addBook: builder.mutation<Book, Partial<Book>>({
       query: (newBook) => ({
         url: '/books',
@@ -53,8 +53,8 @@ export const booksApi = createApi({
       invalidatesTags: ['Books'],
     }),
 
-    // DELETE Book
-    deleteBook: builder.mutation<void, string>({   
+
+    deleteBook: builder.mutation<void, string>({
       query: (id) => ({
         url: `/books/${id}`,
         method: 'DELETE',
@@ -62,10 +62,10 @@ export const booksApi = createApi({
       invalidatesTags: ['Books'],
     }),
 
-    // UPDATE Rating
+
     updateRating: builder.mutation<
       Book,
-      { id: string; rating: number }   
+      { id: string; rating: number }
     >({
       query: ({ id, rating }) => ({
         url: `/books/${id}`,
@@ -75,6 +75,48 @@ export const booksApi = createApi({
       invalidatesTags: ['Books'],
     }),
 
+
+    getFavorites: builder.query<Book[], void>({
+      query: () => '/favorites',
+      transformResponse: (response: any[]) =>
+        response.map((item) => item.book),
+      providesTags: ['Favorites'],
+    }),
+
+
+    addFavorite: builder.mutation<void, string>({
+      query: (bookId) => ({
+        url: `/favorites/${bookId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Favorites'],
+    }),
+
+
+    removeFavorite: builder.mutation<void, string>({
+      query: (bookId) => ({
+        url: `/favorites/${bookId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Favorites'],
+    }),
+
+
+    getAdminDashboard: builder.query<
+      {
+        totalUsers: number
+        totalBooks: number
+        totalIssued: number
+        totalPending: number
+      },
+      void
+    >({
+      query: () => '/admin/dashboard',
+    }),
+
+
+    
+
   }),
 })
 
@@ -83,4 +125,15 @@ export const {
   useAddBookMutation,
   useDeleteBookMutation,
   useUpdateRatingMutation,
+
+  // Favorites hooks
+  useGetFavoritesQuery,
+  useAddFavoriteMutation,
+  useRemoveFavoriteMutation,
+
+  useGetAdminDashboardQuery,
+  
+
+
+
 } = booksApi

@@ -2,12 +2,18 @@ import BookCard from '../components/BookCard'
 import AddBookForm from '../components/AddBookForm'
 import Modal from '../components/Modal'
 import { useState } from 'react'
-import type { Book } from '../types/book' // we including this with (import type) bcoz this will remove completely after compilation
+import type { Book } from '../types/book'
 import { useBooks } from '../hooks/useBooks'
 
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootState } from '../app/store'
 import { setPage, resetPage } from '../features/pagination/paginationSlice'
+
+import {
+  useGetFavoritesQuery,
+  useAddFavoriteMutation,
+  useRemoveFavoriteMutation,
+} from '../features/books/booksApi'
 
 function Dashboard() {
   const [genre, setGenre] = useState<string>('')
@@ -23,10 +29,30 @@ function Dashboard() {
     (state: RootState) => state.auth
   )
 
+  const isUser = role === 'user'
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   const { books, totalPages, isLoading, error } =
     useBooks(genre, search, page, limit)
+
+  // ✅ Fetch favorites only if user
+  const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
+    skip: !isUser,
+  })
+
+  const [addFavorite] = useAddFavoriteMutation()
+  const [removeFavorite] = useRemoveFavoriteMutation()
+
+  const handleToggleFavorite = async (bookId: string) => {
+    const isFavorite = favorites.some((fav) => fav._id === bookId)
+
+    if (isFavorite) {
+      await removeFavorite(bookId)
+    } else {
+      await addFavorite(bookId)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -48,7 +74,7 @@ function Dashboard() {
     <div className="min-h-[calc(100vh-64px)] bg-slate-100 px-4 py-8">
       <div className="max-w-6xl mx-auto flex flex-col min-h-[calc(100vh-128px)]">
 
-        {/* Filters + Add Book */}
+        {/* Filters */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
 
           <input
@@ -57,9 +83,9 @@ function Dashboard() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
-              dispatch(resetPage()) // when genre or search changes page will reset to 1
+              dispatch(resetPage())
             }}
-            className="w-full md:w-72 border border-slate-200 bg-white rounded-lg px-4 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition-all duration-150"
+            className="w-full md:w-72 border border-slate-200 bg-white rounded-lg px-4 py-2 text-sm"
           />
 
           <div className="flex items-center gap-3">
@@ -67,9 +93,9 @@ function Dashboard() {
               value={genre}
               onChange={(e) => {
                 setGenre(e.target.value)
-                dispatch(resetPage()) // when genre changes page will reset to 1
+                dispatch(resetPage())
               }}
-              className="border border-slate-200 bg-white rounded-lg px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition-all duration-150"
+              className="border border-slate-200 bg-white rounded-lg px-3 py-2 text-sm"
             >
               <option value="">All Genres</option>
               <option value="Fiction">Fiction</option>
@@ -78,11 +104,10 @@ function Dashboard() {
               <option value="Biography">Biography</option>
             </select>
 
-            {/* Only ADMIN can add books */}
             {role === 'admin' && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors duration-150"
+                className="bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg"
               >
                 + Add Book
               </button>
@@ -90,16 +115,27 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Book grid */}
+        {/* Book Grid */}
         <div className="flex-grow">
           {books.length === 0 ? (
             <div className="text-center mt-16 text-slate-400">
-              <p className="text-base font-medium">No books found</p>
+              <p>No books found</p>
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {books.map((book: Book) => (
-                <BookCard key={book.id} book={book} />
+                <BookCard
+                  key={book._id}
+                  book={book}
+                  isFavorite={
+                    isUser &&
+                    favorites.some((fav) => fav._id === book._id)
+                  }
+                  onToggleFavorite={() =>
+                    handleToggleFavorite(book._id)
+                  }
+                  showFavorite={isUser}
+                />
               ))}
             </div>
           )}
@@ -107,23 +143,23 @@ function Dashboard() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8 pt-5 border-t border-slate-200 flex justify-center items-center gap-4">
+          <div className="mt-8 pt-5 border-t flex justify-center items-center gap-4">
             <button
               onClick={() => dispatch(setPage(page - 1))}
-              disabled={page === 1} // we can`t access button
-              className="px-4 py-1.5 bg-white border border-slate-200 text-sm text-slate-600 rounded-lg disabled:opacity-40 hover:border-indigo-300 hover:text-indigo-600 transition-colors duration-150"
+              disabled={page === 1}
+              className="px-4 py-1.5 bg-white border text-sm rounded-lg"
             >
               Prev
             </button>
 
-            <span className="text-sm text-slate-500 font-medium">
+            <span className="text-sm">
               Page {page} of {totalPages}
             </span>
 
             <button
               onClick={() => dispatch(setPage(page + 1))}
               disabled={page === totalPages}
-              className="px-4 py-1.5 bg-white border border-slate-200 text-sm text-slate-600 rounded-lg disabled:opacity-40 hover:border-indigo-300 hover:text-indigo-600 transition-colors duration-150"
+              className="px-4 py-1.5 bg-white border text-sm rounded-lg"
             >
               Next
             </button>
@@ -132,7 +168,6 @@ function Dashboard() {
 
       </div>
 
-      {/* Only ADMIN sees modal */}
       {role === 'admin' && (
         <Modal
           isOpen={isModalOpen}

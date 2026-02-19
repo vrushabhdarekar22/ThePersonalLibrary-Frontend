@@ -9,6 +9,9 @@ import MyBorrows from './pages/MyBorrows'
 import PendingRequests from './pages/PendingRequests'
 import IssuedBooks from './pages/IssuedBooks'
 import AllBorrows from './pages/AllBorrows'
+import Favorites from './pages/Favorites'
+import AdminOverview from './pages/AdminOverview'
+// import BorrowAnalytics from './pages/BorrowAnalytics'
 
 
 function App() {
@@ -73,6 +76,13 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
+          <Route path="/favorites" element={<Favorites />} />
+
+          <Route path="/admin" element={<AdminOverview />} />
+
+
+
 
 
         </Routes>
