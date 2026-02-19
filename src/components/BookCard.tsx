@@ -1,41 +1,34 @@
 import { useDeleteBook, useUpdateRating } from '../hooks/useBooks'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState, AppDispatch } from '../app/store'
+import { useSelector } from 'react-redux'
+import type { RootState } from '../app/store'
 import type { Book } from '../types/book'
-import { toggleFavorite, removeFavorite } from '../features/favorites/favoritesSlice'
 import { useRequestBookMutation } from '../features/borrow/borrowApi'
 import toast from 'react-hot-toast'
 
 interface BookCardProps {
   book: Book
+  isFavorite?: boolean
+  onToggleFavorite?: () => void
+  showFavorite?: boolean
 }
 
-function BookCard({ book }: BookCardProps) {
+function BookCard({
+  book,
+  isFavorite = false,
+  onToggleFavorite,
+  showFavorite = false,
+}: BookCardProps) {
   const [deleteBook] = useDeleteBook()
   const [updateRating] = useUpdateRating()
   const [requestBook] = useRequestBookMutation()
 
-  const dispatch = useDispatch<AppDispatch>()
-
-  const favoriteIds = useSelector(
-    (state: RootState) => state.favorites.favoriteIds
-  )
-
-  const { role } = useSelector(
-    (state: RootState) => state.auth
-  )
-
-  const isFavorite = favoriteIds.includes(book._id) 
+  const { role } = useSelector((state: RootState) => state.auth)
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span
         key={index}
-        className={
-          index < rating
-            ? 'text-amber-400'
-            : 'text-gray-300'
-        }
+        className={index < rating ? 'text-amber-400' : 'text-gray-300'}
       >
         ★
       </span>
@@ -55,9 +48,9 @@ function BookCard({ book }: BookCardProps) {
           </p>
         </div>
 
-        {role === 'user' && (
+        {showFavorite && (
           <button
-            onClick={() => dispatch(toggleFavorite(book._id))} 
+            onClick={onToggleFavorite}
             className={`text-xl transition ${
               isFavorite
                 ? 'text-amber-400 scale-110'
@@ -75,13 +68,14 @@ function BookCard({ book }: BookCardProps) {
         </span>
       </div>
 
-      {/* 🔥 Availability Badge */}
       <div className="mb-2">
-        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-          book.isAvailable
-            ? 'bg-green-100 text-green-600'
-            : 'bg-red-100 text-red-600'
-        }`}>
+        <span
+          className={`text-xs px-2 py-1 rounded-full font-medium ${
+            book.isAvailable
+              ? 'bg-green-100 text-green-600'
+              : 'bg-red-100 text-red-600'
+          }`}
+        >
           {book.isAvailable ? 'Available' : 'Issued'}
         </span>
       </div>
@@ -96,7 +90,7 @@ function BookCard({ book }: BookCardProps) {
           <button
             onClick={() =>
               updateRating({
-                id: book._id, 
+                id: book._id,
                 rating: Math.max(1, book.rating - 1),
               })
             }
@@ -108,7 +102,7 @@ function BookCard({ book }: BookCardProps) {
           <button
             onClick={() =>
               updateRating({
-                id: book._id, 
+                id: book._id,
                 rating: Math.min(5, book.rating + 1),
               })
             }
@@ -120,8 +114,7 @@ function BookCard({ book }: BookCardProps) {
           {role === 'admin' && (
             <button
               onClick={async () => {
-                await deleteBook(book._id).unwrap() 
-                dispatch(removeFavorite(book._id))  
+                await deleteBook(book._id).unwrap()
               }}
               className="ml-auto px-3 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition"
             >
@@ -135,7 +128,7 @@ function BookCard({ book }: BookCardProps) {
         <button
           onClick={async () => {
             try {
-              await requestBook(book._id).unwrap() 
+              await requestBook(book._id).unwrap()
               toast.success('Book request sent')
             } catch (err: any) {
               toast.error(err?.data?.message || 'Request failed')

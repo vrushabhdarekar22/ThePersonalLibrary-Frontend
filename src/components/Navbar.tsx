@@ -2,22 +2,26 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import type { RootState } from '../app/store'
 import { logout } from '../features/auth/authSlice'
-import { clearFavorites } from '../features/favorites/favoritesSlice'
+import { useGetFavoritesQuery } from '../features/books/booksApi'
 
 function Navbar() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const favoriteCount = useSelector(
-    (state: RootState) => state.favorites.favoriteIds.length
-  )
-
   const { isAuthenticated, role } = useSelector(
     (state: RootState) => state.auth
   )
 
+  const isUser = role === 'user'
+
+  // ✅ Fetch favorites count from DB
+  const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
+    skip: !isAuthenticated || !isUser,
+  })
+
+  const favoriteCount = favorites.length
+
   const handleLogout = () => {
-    dispatch(clearFavorites())
     dispatch(logout())
     navigate('/login')
   }
@@ -39,7 +43,6 @@ function Navbar() {
           </span>
         </Link>
 
-        {/* Nav links + actions */}
         <div className="flex items-center gap-1">
 
           {isAuthenticated && (
@@ -52,7 +55,7 @@ function Navbar() {
           )}
 
           {/* USER LINKS */}
-          {isAuthenticated && role === 'user' && (
+          {isAuthenticated && isUser && (
             <>
               <Link
                 to="/my-borrows"
@@ -104,14 +107,27 @@ function Navbar() {
             >
               All Borrows
             </Link>
+
+
+
           )}
 
-          {/* Divider */}
+
+          {isAuthenticated && (role === 'admin' || role === 'manager') && (
+            <Link
+              to="/admin"
+              className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-150"
+            >
+              Overview
+            </Link>
+          )}
+
+
+
           {isAuthenticated && (
             <div className="w-px h-5 bg-slate-200 mx-2" />
           )}
 
-          {/* AUTH */}
           {!isAuthenticated ? (
             <div className="flex items-center gap-2 ml-2">
               <Link
@@ -129,14 +145,13 @@ function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              {/* Role badge */}
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${
-                role === 'admin'
-                  ? 'bg-rose-50 text-rose-600'
-                  : role === 'manager'
+
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${role === 'admin'
+                ? 'bg-rose-50 text-rose-600'
+                : role === 'manager'
                   ? 'bg-amber-50 text-amber-600'
                   : 'bg-indigo-50 text-indigo-600'
-              }`}>
+                }`}>
                 {role}
               </span>
 
@@ -144,15 +159,13 @@ function Navbar() {
                 onClick={handleLogout}
                 className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-150"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
                 Logout
               </button>
             </div>
           )}
+
+
+
 
         </div>
       </div>
