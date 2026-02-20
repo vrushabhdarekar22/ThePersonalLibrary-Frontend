@@ -1,24 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { RootState } from '../../app/store'
+import { booksApi } from '../books/booksApi'
 
 export const borrowApi = createApi({
   reducerPath: 'borrowApi',
 
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL,
-
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token
-
       if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
-
       return headers
     },
   }),
 
-  // 🔥 Added Analytics tag
   tagTypes: ['Borrow', 'Analytics'],
 
   endpoints: (builder) => ({
@@ -37,7 +34,17 @@ export const borrowApi = createApi({
         method: 'POST',
         body: { bookId },
       }),
-      invalidatesTags: ['Borrow', 'Analytics'], // 🔥 added Analytics
+      invalidatesTags: ['Borrow', 'Analytics'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(
+            booksApi.util.invalidateTags([
+              { type: 'Books', id: 'LIST' },
+            ])
+          )
+        } catch {}
+      },
     }),
 
     // =========================
@@ -54,7 +61,17 @@ export const borrowApi = createApi({
         method: 'POST',
         body: { borrowId },
       }),
-      invalidatesTags: ['Borrow', 'Analytics'], // 🔥 added
+      invalidatesTags: ['Borrow', 'Analytics'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(
+            booksApi.util.invalidateTags([
+              { type: 'Books', id: 'LIST' },
+            ])
+          )
+        } catch {}
+      },
     }),
 
     declineRequest: builder.mutation<any, string>({
@@ -63,7 +80,7 @@ export const borrowApi = createApi({
         method: 'POST',
         body: { borrowId },
       }),
-      invalidatesTags: ['Borrow', 'Analytics'], // 🔥 added
+      invalidatesTags: ['Borrow', 'Analytics'],
     }),
 
     // =========================
@@ -80,7 +97,17 @@ export const borrowApi = createApi({
         method: 'POST',
         body: { borrowId },
       }),
-      invalidatesTags: ['Borrow', 'Analytics'], // 🔥 added
+      invalidatesTags: ['Borrow', 'Analytics'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(
+            booksApi.util.invalidateTags([
+              { type: 'Books', id: 'LIST' },
+            ])
+          )
+        } catch {}
+      },
     }),
 
     getAllBorrows: builder.query<any[], void>({
@@ -108,7 +135,6 @@ export const borrowApi = createApi({
           : '/borrow/analytics/users',
       providesTags: ['Analytics'],
     }),
-
 
   }),
 })

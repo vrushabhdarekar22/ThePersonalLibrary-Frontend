@@ -13,7 +13,12 @@ export const useBooks = (
   limit: number
 ) => {
   const { data, isLoading, error } =
-    useGetBooksQuery({ genre, search, page, limit }) //actual API Call
+    useGetBooksQuery(
+      { genre, search, page, limit },
+      { refetchOnMountOrArgChange: true ,
+         refetchOnFocus: true, 
+      }
+    )
 
   return {
     books: data?.data ?? [],

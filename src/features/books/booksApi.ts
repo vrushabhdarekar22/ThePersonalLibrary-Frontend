@@ -24,7 +24,9 @@ export const booksApi = createApi({
 
   endpoints: (builder) => ({
 
-
+    // =========================
+    // GET BOOKS (PAGINATED)
+    // =========================
     getBooks: builder.query<
       PaginatedBooks,
       { genre: string; search: string; page: number; limit: number }
@@ -40,29 +42,45 @@ export const booksApi = createApi({
 
         return `/books?${params.toString()}`
       },
-      providesTags: ['Books'],
+
+      providesTags: (result) =>
+        result
+          ? [
+            { type: 'Books', id: 'LIST' },
+            ...result.data.map(({ _id }) => ({
+              type: 'Books' as const,
+              id: _id,
+            })),
+          ]
+          : [{ type: 'Books', id: 'LIST' }],
     }),
 
-
+    // =========================
+    // ADD BOOK
+    // =========================
     addBook: builder.mutation<Book, Partial<Book>>({
       query: (newBook) => ({
         url: '/books',
         method: 'POST',
         body: newBook,
       }),
-      invalidatesTags: ['Books'],
+      invalidatesTags: [{ type: 'Books', id: 'LIST' }],
     }),
 
-
+    // =========================
+    // DELETE BOOK
+    // =========================
     deleteBook: builder.mutation<void, string>({
       query: (id) => ({
         url: `/books/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Books'],
+      invalidatesTags: [{ type: 'Books', id: 'LIST' }],
     }),
 
-
+    // =========================
+    // UPDATE RATING
+    // =========================
     updateRating: builder.mutation<
       Book,
       { id: string; rating: number }
@@ -72,17 +90,20 @@ export const booksApi = createApi({
         method: 'PATCH',
         body: { rating },
       }),
-      invalidatesTags: ['Books'],
+      invalidatesTags: (_result, _error, arg) => [
+        { type: 'Books', id: arg.id },
+      ],
     }),
 
-
+    // =========================
+    // FAVORITES
+    // =========================
     getFavorites: builder.query<Book[], void>({
       query: () => '/favorites',
       transformResponse: (response: any[]) =>
         response.map((item) => item.book),
       providesTags: ['Favorites'],
     }),
-
 
     addFavorite: builder.mutation<void, string>({
       query: (bookId) => ({
@@ -92,7 +113,6 @@ export const booksApi = createApi({
       invalidatesTags: ['Favorites'],
     }),
 
-
     removeFavorite: builder.mutation<void, string>({
       query: (bookId) => ({
         url: `/favorites/${bookId}`,
@@ -101,7 +121,9 @@ export const booksApi = createApi({
       invalidatesTags: ['Favorites'],
     }),
 
-
+    // =========================
+    // ADMIN DASHBOARD
+    // =========================
     getAdminDashboard: builder.query<
       {
         totalUsers: number
@@ -114,9 +136,6 @@ export const booksApi = createApi({
       query: () => '/admin/dashboard',
     }),
 
-
-    
-
   }),
 })
 
@@ -125,15 +144,8 @@ export const {
   useAddBookMutation,
   useDeleteBookMutation,
   useUpdateRatingMutation,
-
-  // Favorites hooks
   useGetFavoritesQuery,
   useAddFavoriteMutation,
   useRemoveFavoriteMutation,
-
   useGetAdminDashboardQuery,
-  
-
-
-
 } = booksApi

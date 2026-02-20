@@ -33,10 +33,14 @@ function Dashboard() {
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
-  const { books, totalPages, isLoading, error } =
-    useBooks(genre, search, page, limit)
+  const {
+    books,
+    totalPages,
+    isLoading,
+    error,
+  } = useBooks(genre, search, page, limit)
 
-  // ✅ Fetch favorites only if user
+  // Fetch favorites only for users
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
     skip: !isUser,
   })
@@ -52,6 +56,8 @@ function Dashboard() {
     } else {
       await addFavorite(bookId)
     }
+
+    
   }
 
   if (isLoading) {
