@@ -1,8 +1,9 @@
 export interface Book {
-  _id: string        
+  _id: string
   title: string
   author: string
   genre: string
   rating: number
-  isAvailable: boolean
+  totalCopies: number
+  availableCopies: number
 }

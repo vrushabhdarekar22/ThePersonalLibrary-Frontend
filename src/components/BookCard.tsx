@@ -51,11 +51,10 @@ function BookCard({
         {showFavorite && (
           <button
             onClick={onToggleFavorite}
-            className={`text-xl transition ${
-              isFavorite
-                ? 'text-amber-400 scale-110'
-                : 'text-gray-300 hover:text-amber-400'
-            }`}
+            className={`text-xl transition ${isFavorite
+              ? 'text-amber-400 scale-110'
+              : 'text-gray-300 hover:text-amber-400'
+              }`}
           >
             ★
           </button>
@@ -68,15 +67,18 @@ function BookCard({
         </span>
       </div>
 
-      <div className="mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <span
-          className={`text-xs px-2 py-1 rounded-full font-medium ${
-            book.isAvailable
-              ? 'bg-green-100 text-green-600'
-              : 'bg-red-100 text-red-600'
-          }`}
+          className={`text-xs px-2 py-1 rounded-full font-medium ${book.availableCopies > 0
+            ? 'bg-green-100 text-green-600'
+            : 'bg-red-100 text-red-600'
+            }`}
         >
-          {book.isAvailable ? 'Available' : 'Issued'}
+          {book.availableCopies > 0 ? 'Available' : 'Out of Stock'}
+        </span>
+
+        <span className="text-xs text-gray-500">
+          {book.availableCopies} / {book.totalCopies} copies
         </span>
       </div>
 
@@ -124,8 +126,9 @@ function BookCard({
         </div>
       )}
 
-      {role === 'user' && book.isAvailable && (
+      {role === 'user' && (
         <button
+          disabled={book.availableCopies <= 0}
           onClick={async () => {
             try {
               await requestBook(book._id).unwrap()
@@ -134,9 +137,12 @@ function BookCard({
               toast.error(err?.data?.message || 'Request failed')
             }
           }}
-          className="mt-3 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+          className={`mt-3 w-full py-2 rounded-lg transition ${book.availableCopies > 0
+            ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
-          Request Book
+          {book.availableCopies > 0 ? 'Request Book' : 'Out of Stock'}
         </button>
       )}
     </div>
