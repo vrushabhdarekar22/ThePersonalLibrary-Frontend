@@ -130,6 +130,9 @@ export const booksApi = createApi({
         totalBooks: number
         totalIssued: number
         totalPending: number
+        totalFineCollected: number
+        monthlyFine: number
+        outstandingFine: number
       },
       void
     >({
