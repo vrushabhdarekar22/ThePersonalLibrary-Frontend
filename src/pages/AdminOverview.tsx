@@ -10,7 +10,6 @@ function AdminOverview() {
   const isAdmin = role === 'admin'
   const isAllowed = role === 'admin' || role === 'manager'
 
-  // Search state
   const [search, setSearch] = useState('')
 
   const {
@@ -19,7 +18,6 @@ function AdminOverview() {
   } = useGetAdminDashboardQuery(undefined, {
     skip: !isAdmin,
   })
-
 
   const {
     data: analytics = [],
@@ -32,71 +30,93 @@ function AdminOverview() {
   if (!isAllowed) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-slate-100">
-        <p className="text-slate-500 text-sm">
-          Access denied.
-        </p>
+        <p className="text-slate-500 text-sm">Access denied.</p>
       </div>
     )
   }
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-100 px-4 py-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
 
         <h2 className="text-2xl font-semibold text-slate-800 mb-8">
           Management Overview
         </h2>
 
-
+        {/* ================= ADMIN SUMMARY ================= */}
         {isAdmin && (
           <>
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">
-              System Summary
-            </h3>
-
             {summaryLoading || !summary ? (
               <p className="text-sm text-slate-400 mb-8">
                 Loading summary...
               </p>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+              <>
+                {/* -------- System Metrics -------- */}
+                <h4 className="text-md font-semibold text-slate-600 mb-3">
+                  System Metrics
+                </h4>
 
-                <StatCard
-                  title="Total Users"
-                  value={summary.totalUsers}
-                  color="indigo"
-                />
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+                  <StatCard
+                    title="Total Users"
+                    value={summary.totalUsers}
+                    color="indigo"
+                  />
 
-                <StatCard
-                  title="Total Books"
-                  value={summary.totalBooks}
-                  color="green"
-                />
+                  <StatCard
+                    title="Total Books"
+                    value={summary.totalBooks}
+                    color="green"
+                  />
 
-                <StatCard
-                  title="Issued Books"
-                  value={summary.totalIssued}
-                  color="amber"
-                />
+                  <StatCard
+                    title="Issued Books"
+                    value={summary.totalIssued}
+                    color="amber"
+                  />
 
-                <StatCard
-                  title="Pending Requests"
-                  value={summary.totalPending}
-                  color="rose"
-                />
+                  <StatCard
+                    title="Pending Requests"
+                    value={summary.totalPending}
+                    color="rose"
+                  />
+                </div>
 
-              </div>
+                {/* -------- Financial Metrics -------- */}
+                <h4 className="text-md font-semibold text-slate-600 mb-3">
+                  Financial Overview
+                </h4>
+
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+                  <FinancialCard
+                    title="Total Fine Collected"
+                    value={summary.totalFineCollected}
+                    color="emerald"
+                  />
+
+                  <FinancialCard
+                    title="Monthly Fine"
+                    value={summary.monthlyFine}
+                    color="indigo"
+                  />
+
+                  <FinancialCard
+                    title="Outstanding Fine"
+                    value={summary.outstandingFine}
+                    color="rose"
+                  />
+                </div>
+              </>
             )}
           </>
         )}
 
-
-
+        {/* ================= ANALYTICS (ADMIN + MANAGER) ================= */}
         <h3 className="text-lg font-semibold text-slate-700 mb-4">
           User Borrow Analytics
         </h3>
 
-        {/* Search Bar */}
         <div className="mb-4">
           <input
             type="text"
@@ -122,7 +142,6 @@ function AdminOverview() {
         ) : (
           <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
             <table className="min-w-full text-sm">
-
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="text-left px-6 py-3 font-semibold text-slate-600">
@@ -140,7 +159,6 @@ function AdminOverview() {
                   <th className="text-center px-6 py-3 font-semibold text-slate-600">
                     Total Returned
                   </th>
-
                 </tr>
               </thead>
 
@@ -171,11 +189,9 @@ function AdminOverview() {
                         {user.totalReturned}
                       </span>
                     </td>
-
                   </tr>
                 ))}
               </tbody>
-
             </table>
           </div>
         )}
@@ -184,6 +200,8 @@ function AdminOverview() {
     </div>
   )
 }
+
+/* ================= COMPONENTS ================= */
 
 interface StatCardProps {
   title: string
@@ -204,6 +222,31 @@ function StatCard({ title, value, color }: StatCardProps) {
       <p className="text-sm text-slate-500 mb-2">{title}</p>
       <div className={`text-3xl font-bold ${colorMap[color]}`}>
         {value}
+      </div>
+    </div>
+  )
+}
+
+function FinancialCard({
+  title,
+  value,
+  color,
+}: {
+  title: string
+  value: number
+  color: 'emerald' | 'indigo' | 'rose'
+}) {
+  const colorMap = {
+    emerald: 'bg-emerald-100 text-emerald-600',
+    indigo: 'bg-indigo-100 text-indigo-600',
+    rose: 'bg-rose-100 text-rose-600',
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition">
+      <p className="text-sm text-slate-500 mb-2">{title}</p>
+      <div className={`text-3xl font-bold ${colorMap[color]}`}>
+        ₹{value}
       </div>
     </div>
   )

@@ -43,7 +43,7 @@ export const borrowApi = createApi({
               { type: 'Books', id: 'LIST' },
             ])
           )
-        } catch {}
+        } catch { }
       },
     }),
 
@@ -70,7 +70,7 @@ export const borrowApi = createApi({
               { type: 'Books', id: 'LIST' },
             ])
           )
-        } catch {}
+        } catch { }
       },
     }),
 
@@ -86,8 +86,11 @@ export const borrowApi = createApi({
     // =========================
     // ISSUED BOOKS
     // =========================
-    getIssuedBooks: builder.query<any[], void>({
-      query: () => '/borrow/issued',
+    getIssuedBooks: builder.query<any[], string | undefined>({
+      query: (search) =>
+        search && search.trim()
+          ? `/borrow/issued?search=${encodeURIComponent(search)}`
+          : '/borrow/issued',
       providesTags: ['Borrow'],
     }),
 
@@ -106,7 +109,7 @@ export const borrowApi = createApi({
               { type: 'Books', id: 'LIST' },
             ])
           )
-        } catch {}
+        } catch { }
       },
     }),
 
