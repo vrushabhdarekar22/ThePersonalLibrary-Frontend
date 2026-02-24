@@ -11,37 +11,37 @@ export const useAddBookForm = (
   const [author, setAuthor] = useState<string>('')
   const [genre, setGenre] = useState<string>('')
   const [rating, setRating] = useState<number>(1)
+  const [totalCopies, setTotalCopies] = useState(1)
 
   const [addBook, { isLoading }] = useAddBook()
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!title || !author) return
-
-     try {
-      await addBook({ title, author, genre, rating }).unwrap()
+    try {
+      await addBook({
+        title,
+        author,
+        genre,
+        rating,
+        totalCopies,
+      }).unwrap() 
 
       toast.success('Book added successfully')
 
       onSuccess?.()
 
-    } catch (error) {
-      toast.error('Failed to add book')
-    }
+      // reset form
+      setTitle('')
+      setAuthor('')
+      setGenre('')
+      setRating(3)
+      setTotalCopies(1)
 
-
-
-    setTitle('')
-    setAuthor('')
-    setGenre('')
-    setRating(1)
-
-   
-    if (onSuccess) {
-      onSuccess()
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || 'Failed to add book'
+      )
     }
   }
 
@@ -50,11 +50,13 @@ export const useAddBookForm = (
     author,
     genre,
     rating,
+    totalCopies,
     isLoading,
     setTitle,
     setAuthor,
     setGenre,
     setRating,
+    setTotalCopies,
     handleSubmit,
   }
 }

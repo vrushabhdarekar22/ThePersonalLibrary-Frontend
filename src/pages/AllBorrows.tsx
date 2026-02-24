@@ -29,8 +29,8 @@ const AllBorrows = () => {
 
   const statusStyle = (status: string) => {
     if (status === 'requested') return 'bg-yellow-50 text-yellow-600 border border-yellow-100'
-    if (status === 'issued')    return 'bg-indigo-50 text-indigo-600 border border-indigo-100'
-    if (status === 'returned')  return 'bg-green-50 text-green-600 border border-green-100'
+    if (status === 'issued') return 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+    if (status === 'returned') return 'bg-green-50 text-green-600 border border-green-100'
     return 'bg-red-50 text-red-500 border border-red-100'
   }
 
@@ -45,14 +45,25 @@ const AllBorrows = () => {
 
         <div className="space-y-3">
           {data.map((borrow) => (
-            <div key={borrow.id} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-4">
-
+            <div
+              key={borrow._id}
+              className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-4"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-800">{borrow.book.title}</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">{borrow.user.email}</p>
+                  <h3 className="text-sm font-semibold text-slate-800">
+                    {borrow.book?.title || 'Deleted Book'}
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {borrow.user?.email || '-'}
+                  </p>
                 </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize shrink-0 ${statusStyle(borrow.status)}`}>
+
+                <span
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize shrink-0 ${statusStyle(
+                    borrow.status
+                  )}`}
+                >
                   {borrow.status}
                 </span>
               </div>
@@ -69,7 +80,6 @@ const AllBorrows = () => {
                   </p>
                 )}
               </div>
-
             </div>
           ))}
         </div>

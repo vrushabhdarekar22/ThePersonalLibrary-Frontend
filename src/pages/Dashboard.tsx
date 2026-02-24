@@ -49,7 +49,7 @@ function Dashboard() {
   const [removeFavorite] = useRemoveFavoriteMutation()
 
   const handleToggleFavorite = async (bookId: string) => {
-    const isFavorite = favorites.some((fav) => fav._id === bookId)
+    const isFavorite = favorites.some((fav) => fav && fav._id === bookId)
 
     if (isFavorite) {
       await removeFavorite(bookId)
@@ -135,7 +135,7 @@ function Dashboard() {
                   book={book}
                   isFavorite={
                     isUser &&
-                    favorites.some((fav) => fav._id === book._id)
+                    favorites.some((fav) => fav?._id === book._id)
                   }
                   onToggleFavorite={() =>
                     handleToggleFavorite(book._id)

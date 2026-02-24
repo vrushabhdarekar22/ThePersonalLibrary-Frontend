@@ -18,7 +18,7 @@ ReactDOM.createRoot(rootElement).render(
     {/**Makes store accessible in all components => now we cna use useSelector() and useDispatch()*/}
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <BrowserRouter> {/* 👈 added */}
+        <BrowserRouter> 
           <App />
         </BrowserRouter>
       </PersistGate>
