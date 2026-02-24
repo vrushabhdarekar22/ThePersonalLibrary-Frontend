@@ -101,7 +101,9 @@ export const booksApi = createApi({
     getFavorites: builder.query<Book[], void>({
       query: () => '/favorites',
       transformResponse: (response: any[]) =>
-        response.map((item) => item.book),
+        response
+          .map((item) => item.book)
+          .filter((book) => book !== null),
       providesTags: ['Favorites'],
     }),
 

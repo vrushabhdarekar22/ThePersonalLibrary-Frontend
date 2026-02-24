@@ -6,19 +6,29 @@ interface AddBookFormProps {
 
 function AddBookForm({ onSuccess }: AddBookFormProps) {
   const {
-    title, author, genre, rating, isLoading,
-    setTitle, setAuthor, setGenre, setRating, handleSubmit,
-  } = useAddBookForm(onSuccess)
+  title,
+  author,
+  genre,
+  rating,
+  totalCopies,
+  isLoading,
+  setTitle,
+  setAuthor,
+  setGenre,
+  setRating,
+  setTotalCopies,
+  handleSubmit,
+} = useAddBookForm(onSuccess)
 
   return (
-  
+
     <div className="max-w-fit mx-auto p-4">
       <form
         onSubmit={handleSubmit}
         className="relative bg-white/95 backdrop-blur-sm rounded-2xl p-5 w-[280px] shadow-2xl border border-gray-100"
       >
         <div className="relative z-10">
-          
+
           <div className="text-center mb-4">
             <div className="inline-flex items-center justify-center w-8 h-8 bg-indigo-600 rounded-lg mb-2">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +38,7 @@ function AddBookForm({ onSuccess }: AddBookFormProps) {
             <h2 className="text-md font-bold text-gray-800">Add New Book</h2>
           </div>
 
-          
+
           <div className="mb-2.5">
             <label className="block text-[10px] uppercase tracking-tight font-bold text-gray-400 mb-0.5 pl-1">Title</label>
             <input
@@ -56,6 +66,20 @@ function AddBookForm({ onSuccess }: AddBookFormProps) {
               onChange={(e) => setGenre(e.target.value)}
               className="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm focus:bg-white focus:border-indigo-500 outline-none transition-all"
               placeholder="e.g. Fiction"
+            />
+          </div>
+
+          <div className="mb-2.5">
+            <label className="block text-[10px] uppercase tracking-tight font-bold text-gray-400 mb-0.5 pl-1">
+              Total Copies
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={totalCopies}
+              onChange={(e) => setTotalCopies(Number(e.target.value))}
+              className="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm focus:bg-white focus:border-indigo-500 outline-none transition-all"
+              placeholder="Enter stock quantity"
             />
           </div>
 

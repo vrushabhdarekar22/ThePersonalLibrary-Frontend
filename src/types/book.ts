@@ -6,4 +6,5 @@ export interface Book {
   rating: number
   totalCopies: number
   availableCopies: number
+  isDeleted?: boolean
 }
