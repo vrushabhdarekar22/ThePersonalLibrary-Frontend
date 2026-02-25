@@ -8,7 +8,7 @@ import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
 
 // Combine reducers
-const rootReducer = combineReducers({
+const rootReducer = combineReducers({ //basically defines redux state shape 
   [booksApi.reducerPath]: booksApi.reducer,
   [borrowApi.reducerPath]: borrowApi.reducer,
   pagination: paginationReducer,
@@ -16,15 +16,15 @@ const rootReducer = combineReducers({
 })
 
 // Persist config
-const persistConfig = {
+const persistConfig = {//redux-persist will store data inside:localstorage named root
   key: 'root',
   storage,
-  whitelist: ['pagination', 'auth'], 
+  whitelist: ['pagination', 'auth'], //only persist this slices
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
-export const store = configureStore({
+export const store = configureStore({ //creates store to stores states
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
